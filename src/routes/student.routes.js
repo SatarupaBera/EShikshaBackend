@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCourseById } from '../controller/course.controller.js';
+import { getCourseById, submitReview } from '../controller/course.controller.js';
 import { downloadAssignmentFile } from '../controller/fileHandle.controller.js';
 import { addResult, deleteResult, giveMarks, searchResults } from '../controller/assignmentResult.controller.js';
 import { deleteAssignment } from '../controller/assignment.controller.js';
@@ -21,7 +21,9 @@ const uploading = multer({
 
 router.route("/course")
     .get( showEnrolledCourses )
-
+    
+//review
+router.post("/course/review/:courseId",submitReview)
 
 router.route("/course/:courseId/enroll")
     .post(enrollment)

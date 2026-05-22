@@ -61,7 +61,7 @@ export const createCourse = funcWrapper(async (req, res) => {
     });
     course = await course.save();
     res.status(201).json(new AppResponse(course, "Course created successfully."));
-
+    
 })
 
 
@@ -72,7 +72,7 @@ export const updateCourse = funcWrapper(async (req, res) => {
         returnDocument: "after",
         context: 'query'
     });
-
+      
     if (!course) {
         throw "This course is not exists or created by you";
     }

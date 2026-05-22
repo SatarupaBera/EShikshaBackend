@@ -18,8 +18,9 @@ export const addAssignment = funcWrapper(async (req, res) => {
     if(!course){
         throw new Error("Invalid Course Id");
     }
-
+    
     const fileId = await uploadAssignmentFile( req );
+    
     const assignment = await AssignmentModel.create({
         ...req.body,
         course: courseId,

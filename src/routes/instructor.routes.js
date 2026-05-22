@@ -29,7 +29,8 @@ router.route("/course/:courseId/assignment")
 router.route("/course/:courseId/assignment/:id")
     .delete(deleteAssignment)
     .patch(assignmentValidators, uploading.single('myFile'), updateAssignment);
-
+    
+//courses
 router.route("/course")
     .post(validSchema, createCourse)
 

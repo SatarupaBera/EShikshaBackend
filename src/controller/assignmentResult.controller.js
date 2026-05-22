@@ -54,7 +54,7 @@ export const searchResults = funcWrapper(async (req, res) => {
                 course: new mongoose.Types.ObjectId(courseId),
                 instructor: new mongoose.Types.ObjectId(instructorId),
                 assignment: new mongoose.Types.ObjectId(assignmentId),
-                marks: { $lte: 0 }
+                marks: { $lte: 0 }      //can give marks to only ungraded students
             }
         },
         {
@@ -114,7 +114,7 @@ export const deleteResult = funcWrapper(async (req, res) => {
 export const giveMarks = funcWrapper(async (req, res) => {
     const { courseId, resultId } = req.params;
     const instructorId = req.user.id;
-
+       
     const validInstructor = await courseModel.findOne({ instructor: instructorId, _id: courseId });
     if (!validInstructor) {
         throw new ErrorResponse(404, "Only valid instructors can give marks")
@@ -132,6 +132,6 @@ export const giveMarks = funcWrapper(async (req, res) => {
     }
 
     updatedCourseInfo(courseId, updated.student, 'assignment', updated.assignment);
-
+    
     res.status(200).json(new AppResponse(null, "marks Updated"));
 })

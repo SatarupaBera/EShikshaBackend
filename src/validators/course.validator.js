@@ -2,7 +2,7 @@ import  {body} from 'express-validator';
 
 const validSchema = [
     body('title')
-    .notEmpty().withMessage("Name is required")
+    .notEmpty().withMessage("Title is required")
     .isLength({max:30}).withMessage("Maximum length is 30"),
 
     body('category')
@@ -20,7 +20,6 @@ const validSchema = [
         }
         return true;
     })
-
 ]
 
 export default validSchema;
