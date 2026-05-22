@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { ErrorResponse } from '../util/ErrorResponse.js';
-import { AppResponse } from '../util/AppResponse.js';
 import Token from "../models/revokedToken.js";
 
 export const protectedRequestHandler = (allwedRoles = []) => {
@@ -12,7 +11,6 @@ export const protectedRequestHandler = (allwedRoles = []) => {
             }
             const token = req.headers.authorization.split(" ")[1];
             const result = jwt.verify(token, process.env.SECRET_KEY);
-            console.log(result);
 
             if (!result.role) {
                 throw new ErrorResponse(400, "user role not found")
@@ -22,7 +20,6 @@ export const protectedRequestHandler = (allwedRoles = []) => {
             req.jti = result.JTI;
 
             const isBackListed = await Token.findOne({ jti: result.JTI });
-            console.log(isBackListed);
 
             if (isBackListed) {
                 throw new ErrorResponse(400, "Token backlisted")

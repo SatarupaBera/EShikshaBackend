@@ -1,7 +1,7 @@
 import express from 'express';
 import { getCourseById, submitReview } from '../controller/course.controller.js';
 import { downloadAssignmentFile } from '../controller/fileHandle.controller.js';
-import { addResult } from '../controller/assignmentResult.controller.js';
+import { addResult, getMarks } from '../controller/assignmentResult.controller.js';
 import multer from 'multer';
 import { enrollment, showEnrolledCourses, deleteEnrollment } from '../controller/enrollment.controller.js';
 import { getQuizById } from '../controller/quiz.controller.js';
@@ -32,10 +32,10 @@ router.route("/course/:courseId/enroll")
     .delete( deleteEnrollment )
 
 router.route("/course/:courseId/assignment/:assignmentId/result")
-    .post(uploading.single('myFile'),addResult)
+    .post( uploading.single('myFile'), addResult )
 
 router.route("/course/:courseId/assignment-result")
-        .get(getMarks);                              
+        .get( getMarks );                              
         
 //download
 router.route("/course/:courseId/assignment/download/:id")

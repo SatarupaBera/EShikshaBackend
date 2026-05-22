@@ -174,7 +174,7 @@ export const submitReview = funcWrapper( async(req, res)=>{
             returnDocument:'after',
             runValidators: true
         }
-    );
+    ).select("-_id feedback");
     
     res.status(200).json(new AppResponse(result,"Thanks for the Review"))
 })
