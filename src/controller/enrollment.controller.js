@@ -9,11 +9,19 @@ import assignmentResultModel from '../models/assignmentResult.model.js';
 
 export const enrollment = funcWrapper(async (req, res) => {
     const courseId = req.params.courseId;
-    const enroll = await new Enrollments({ student: req.user.id, course: courseId }).save();
+    let enroll = await new Enrollments({ student: req.user.id, course: courseId }).save();
     if (!enroll) {
         throw new ErrorResponse(400, "Something went wrong");
     }
-    res.status(201).json(new AppResponse(null, `Successfully enrolled!`));
+    enroll = await enroll.populate({
+        path: "course",
+        select: "title instructor imageUrl category",
+        populate: {
+            path: "instructor",
+            select: "name"
+        }
+    });
+    res.status(201).json(new AppResponse({_id:enroll._id, course:enroll.course, attendedAssignments:enroll.attendedAssignments, attendedQuizes:enroll.attendedQuizes, completePercentage:0}, `Successfully enrolled!`));
 })
 
 export const showEnrolledCourses = funcWrapper(async (req, res) => {
@@ -24,7 +32,7 @@ export const showEnrolledCourses = funcWrapper(async (req, res) => {
             path: "instructor",
             select: "name"
         }
-    });
+    }).sort({createdAt:-1});
     enrolledCourse = await Promise.all(
         enrolledCourse.map(async (ec) => {
             ec = ec.toObject();
@@ -44,41 +52,22 @@ export const showEnrolledCourses = funcWrapper(async (req, res) => {
     res.status(200).json(new AppResponse(enrolledCourse, "Your enrolled Course-"));
 })
 
-// export const getEnrolledCourse = funcWrapper(async (req, res) => {
-//     const { courseId } = req.params;
-//     const enrolledCourse = await Enrollments.findOne({ student: req.user.id, course: courseId }).populate("course");
-//     if (!enrolledCourse) {
-//         throw new ErrorResponse(404, "No course found");
-//     }
-//     res.status(200).json(new AppResponse(enrolledCourse, "success"));
-// })
 
 export const deleteEnrollment = funcWrapper(async (req, res) => {
     const courseId = req.params.courseId;
     const studentId = req.user.id;
     
-    const deletedEnrollment = await Enrollments.findOneAndDelete({ student: studentId, course: courseId });
-    const deleteQuiz=await quizResultModel.findOneAndDelete({student:studentId, course:courseId});
-    const deleteAssignment=await assignmentResultModel.findOneAndDelete({student:studentId, course:courseId});
+    const response = await Promise.all([
+        Enrollments.findOneAndDelete({ student: studentId, course: courseId }),
+        quizResultModel.findOneAndDelete({student:studentId, course:courseId}),
+        assignmentResultModel.findOneAndDelete({student:studentId, course:courseId})
+    ])
 
-    if (!deletedEnrollment) {
-        return next(new ErrorResponse(400, "You are not enrolled in this course."));
+    if (!response) {
+        throw new ErrorResponse(400, "You are not enrolled in this course.");
     }
 
     res.status(200).json(new AppResponse(null, "Successfully unenrolled from the course!"));
-
-    if (!deleteQuiz) {
-        return next(new ErrorResponse(400, "You don't have access."));
-    }
-
-    res.status(200).json(new AppResponse(null, "Successfully deleted the quiz"));
-
-    if (!deleteAssignment) {
-        return next(new ErrorResponse(400, "You don't have access."));
-    }
-
-    res.status(200).json(new AppResponse(null, "Successfully deleted the quiz!"));
-
 })
 
 export const updatedCourseInfo = async (courseId, studentId, updateField, fieldId) => {

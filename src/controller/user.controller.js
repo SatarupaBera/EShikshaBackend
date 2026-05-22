@@ -6,6 +6,7 @@ import { AppResponse } from "../util/AppResponse.js";
 import { ErrorResponse } from "../util/ErrorResponse.js";
 import { funcWrapper } from "../util/wraperFunction.js";
 import crypto from 'crypto';
+import quizResultModel from "../models/quizResult.model.js";
 
 // User
 export const updateUserSettings = funcWrapper(async (req, res)=>{
@@ -95,4 +96,67 @@ export const getInstructorDashboard = funcWrapper(async (req, res)=>{
     ])
 
     res.status(200).json(new AppResponse({courses, students}, "Success"));
+})
+// student dashboard api
+export const getStudentDashboard = funcWrapper(async (req, res)=>{
+    const studentId = req.user.id;
+    const enrolledCourses = await enrollmentModel.aggregate([
+        {
+            $match:{
+                student: new mongoose.Types.ObjectId(studentId)
+            }
+        },
+        {
+            $lookup:{
+                from: "courses",
+                localField: "course",
+                foreignField:"_id",
+                as: "course"
+            }
+        },
+        {
+            $lookup:{
+                from:"assignments",
+                localField: "course._id",
+                foreignField:"course",
+                as: "courseAssignments"
+            }
+        },
+        {
+            $lookup:{
+                from:"quizzes",
+                localField: "course._id",
+                foreignField:"course",
+                as: "courseQuizes"
+            }
+        },
+        {
+            $project:{
+                _id:0,
+                createdAt:1,
+                "course._id":1,
+                "course.title": 1,
+                "course.category":1,
+                totalAttended:{$add:[
+                    {$size: "$attendedAssignments"}, 
+                    {$size: "$attendedQuizes"}
+                ]},
+                totalModule: {
+                    $add: [
+                        { $size: { $ifNull: ["$courseAssignments", []] } },
+                        { $size: { $ifNull: ["$courseQuizes", []] } }
+                    ]
+                }
+            }
+        },
+        {
+            $sort:{
+                createdAt:-1
+            }
+        }
+    ])
+
+    const quizResult = await quizResultModel.find({student:studentId}).select("quiz obtainMarks createdAt").populate("quiz", "-_id totalMarks").populate("course", "-_id title category").sort({obtainMarks:-1});
+
+    res.status(200).json(new AppResponse({enrolledCourses, quizResult}, "success"));
 })

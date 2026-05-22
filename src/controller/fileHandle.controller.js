@@ -2,8 +2,6 @@ import FileModel from '../models/file.model.js';
 import crypto from 'crypto';
 import { funcWrapper } from '../util/wraperFunction.js';
 import { ErrorResponse } from '../util/ErrorResponse.js';
-import { updatedCourseInfo } from './enrollment.controller.js';
-
 
 const getHash = (buffer) => {
     return crypto.createHash('sha256').update(buffer).digest('hex');
@@ -18,10 +16,6 @@ export const downloadAssignmentFile = funcWrapper( async (req, res) => {
         return new ErrorResponse(404, "File not found");
     }
 
-    // const studentId=req.user.id;
-    // const courseId=req.params.courseId;
-    // updatedCourseInfo(courseId,studentId,"assignment",id);
-    
     res.set({
         'Content-Type': file.fileType,
         'Content-Disposition': `attachment; filename="${file.fileName}"`

@@ -23,7 +23,7 @@ router.route("/dashboard")
 
 //assignments
 router.route("/course/:courseId/assignment")
-    .post(assignmentValidators, uploading.single('myFile'), addAssignment)
+    .post(uploading.single('myFile'),assignmentValidators, addAssignment)
     .get(searchAssignment);
 
 router.route("/course/:courseId/assignment/:id")

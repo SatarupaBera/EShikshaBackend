@@ -11,7 +11,7 @@ const validSchema = [
 
     body('description')
     .notEmpty().withMessage("Description is needed")
-    .isLength({min:100}).withMessage("At least 100 characters"),
+    .isLength({min:100}).withMessage("At least 100 characters in description"),
 
     body('instructor')
     .custom((_, {req})=>{

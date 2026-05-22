@@ -25,7 +25,7 @@ const courseSchema=new mongoose.Schema({
     feedback:[
         {
             name:String,
-            Message:String,
+            message:String,
         }
     ],
     description:{

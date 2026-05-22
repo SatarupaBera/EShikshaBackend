@@ -2,7 +2,6 @@ import { funcWrapper } from "../util/wraperFunction.js";
 import QuizResultModel from "../models/quizResult.model.js";
 import { AppResponse } from "../util/AppResponse.js";
 import quizModel from "../models/quiz.model.js";
-import { Types } from "mongoose";
 import { updatedCourseInfo } from "./enrollment.controller.js";
 
 

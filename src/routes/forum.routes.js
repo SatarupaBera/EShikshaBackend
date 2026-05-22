@@ -1,5 +1,5 @@
 import express from 'express';
-import { postForum, getAllForums ,postReply} from '../controller/forum.controller.js'; // Ensure correct controller path
+import { postForum, getAllForums ,postReply} from '../controller/forum.controller.js';
 
 const router = express.Router();
 

@@ -52,90 +52,81 @@ export const getDashboard = funcWrapper(async (req, res)=>{
     fiveMonthAgoDate.setHours(0,0,0,0);
 
     const data = await Promise.all([
-        await userModel.aggregate([
+        userModel.aggregate([
             {
-                $facet: {
-                    "totalUser": [
-                        { 
-                            $match: { role: { $in: ['STUDENT', 'INSTRUCTOR'] } } 
-                        },
-                        {
-                            $group: {
-                                _id: '$role',
-                                total: { $sum: 1 }
-                            }
-                        },
-                        {
-                            $sort:{
-                                role:1
-                            }
-                        }
-                    ],
-                    "monthlyEnrollments": [
-                        {
-                            $match: {
-                                createdAt: { $gte: fiveMonthAgoDate },
-                                role: { $in: ['STUDENT', 'INSTRUCTOR'] }
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: {
-                                year: { $year: '$createdAt' },
-                                month: { $month: '$createdAt' },
-                                role: '$role'
-                                },
-                                count: { $sum: 1 }
-                            }
-                        },
-                        {
-                            $sort: {
-                                '_id.year': 1,
-                                '_id.month': 1
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                year: '$_id.year',
-                                month: '$_id.month',
-                                role: '$_id.role',
-                                count: '$count'
-                            }
-                        }
-                    ]
+                $match:{
+                    role: {
+                        $in : ["INSTRUCTOR", "STUDENT"]
+                    }
+                }
+            },
+            {
+                $group:{
+                    _id: "$role",
+                    total: {$sum: 1}
+                }
+            },
+            {
+                $sort:{
+                    role:1
                 }
             }
         ]),
-        await courseModel.aggregate([
+        userModel.aggregate([
             {
-                $facet:{
-                    "topCourses":[
-                        {
-                            $sort:{
-                                "rating.average":-1
-                            }
-                        },
-                        {
-                            $project:{
-                                _id:0,
-                                title:1,
-                                averageRating:"$rating.average"
-                            }
-                        },
-                        {
-                            $limit:5
-                        }
-                    ],
-                    "totalCourses":[
-                        {
-                            $count:"count"
-                        }
-                    ]
+                $match:{
+                    createdAt: {
+                        $gte: fiveMonthAgoDate
+                    },
+                    role:{
+                        $in:["INSTRUCTOR", "STUDENT"]
+                    }
+                }
+            },
+            {
+                $group:{
+                    _id:{
+                        year: {$year: "$createdAt"},
+                        month: {$month: "$createdAt"},
+                        role: "$role"
+                    },
+                    count: {$sum:1}
+                }
+            },
+            {
+                $sort:{
+                    '_id.year':1,
+                    '_id.month':1
+                }
+            },
+            {
+                $project:{
+                    _id: 0,
+                    year: '$_id.year',
+                    month: '$_id.month',
+                    role: '$_id.role',
+                    count: '$count'
                 }
             }
-        ])
+        ]),
+        courseModel.aggregate([
+            {
+                $sort:{
+                    "rating.average":-1
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    title:1,
+                    averageRating:"$rating.average"
+                }
+            },
+            {
+                $limit:5
+            }
+        ]),
+        courseModel.countDocuments({})
     ])
-
-    res.status(200).json(new AppResponse({userDetails:data[0], courseDetails:data[1]}));
+    res.status(200).json(new AppResponse({userDetails:{totalUser:data[0], monthlyEnrollments:data[1]}, courseDetails:{topCourses:data[2], totalCourses:data[3]}}));
 })

@@ -9,7 +9,7 @@ router.post('/stream', (req, res) => {
       return res.status(400).json({ reply: "Prompt missing hai bhai!" });
     }
 
-    console.log("Static Bot hitting for prompt:", prompt);
+    // console.log("Static Bot hitting for prompt:", prompt);
     const input = prompt.toLowerCase().trim();
     let responseText = "";
 
@@ -32,7 +32,7 @@ router.post('/stream', (req, res) => {
       responseText = "Hello Shahin! You can ask me how to access courses, enroll in new ones, download assignments, take mock tests, or connect with trainers.";
     }
 
-    console.log("Sending plain string response to prevent thinking loop.");
+    // console.log("Sending plain string response to prevent thinking loop.");
     
     
     return res.status(200).json({ reply: responseText });

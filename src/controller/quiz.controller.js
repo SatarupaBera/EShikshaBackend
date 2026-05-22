@@ -40,10 +40,6 @@ export const getQuizById = funcWrapper(async (req, res)=>{
     if(!courseId || !id){
         throw "Invalid path";
     }
-    // const isEnrolled = await Enrollments.findOne({course:courseId, student:req.user.id}).select("_id");
-    // if(!isEnrolled){
-    //     throw new ErrorResponse(404, "This page is not exists or Invalid url");
-    // }
     const quiz = await quizModel.findOne({course:courseId, _id:id}).populate("course", "title").populate("instructor", "name");
     if(!quiz){
         throw new ErrorResponse(404, "This page is not exists or Invalid url");
@@ -53,14 +49,14 @@ export const getQuizById = funcWrapper(async (req, res)=>{
 
 
 export const deleteQuiz =funcWrapper( async (req, res) => {
-        const { courseId, id } = req.params;
+    const { courseId, id } = req.params;
 
-        const quiz = await quizModel.findOneAndDelete({ _id:id, course:courseId, instructor:req.user.id});
-        if (!quiz) {
-            throw new ErrorResponse(404, "No quiz found");
-        }
+    const quiz = await quizModel.findOneAndDelete({ _id:id, course:courseId, instructor:req.user.id});
+    if (!quiz) {
+        throw new ErrorResponse(404, "No quiz found");
+    }
 
-        res.status(200).json(new AppResponse(null, "Quiz deleted successfully"));
+    res.status(200).json(new AppResponse(null, "Quiz deleted successfully"));
 })
 
 export const updateQuiz =funcWrapper(async (req, res) => {

@@ -12,7 +12,7 @@ router.post('/chat', (req, res) => {
       return res.status(400).json({ error: "Prompt is missing" });
     }
 
-    console.log("Hitting Hardcoded HTTPS Stream for prompt:", prompt);
+    // console.log("Hitting Hardcoded HTTPS Stream for prompt:", prompt);
 
     const payload = JSON.stringify({
       inputs: `<|user|>\n${prompt}<|end|>\n<|assistant|>`,

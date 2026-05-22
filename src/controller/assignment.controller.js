@@ -5,10 +5,17 @@ import { AppResponse } from '../util/AppResponse.js';
 import { uploadAssignmentFile } from './fileHandle.controller.js';
 import { ErrorResponse } from '../util/ErrorResponse.js';
 import courseModel from '../models/course.model.js';
+import { validationResult } from 'express-validator';
 
 
 export const addAssignment = funcWrapper(async (req, res) => {
     // Validation for Multer: check if file exists
+
+    const errors = validationResult(req);
+   
+    if(!errors.isEmpty()){
+        throw errors.array();
+    }
     const { courseId } = req.params;
 
     if (!req.file) {
@@ -33,13 +40,10 @@ export const addAssignment = funcWrapper(async (req, res) => {
 
 export const deleteAssignment = funcWrapper(async (req, res) => {
     const { courseId, id } = req.params;
-    console.log("delete runnig");
-    console.log(courseId, id, req.user.id);
     const deleted = await AssignmentModel.findOneAndDelete({ _id: id, course:courseId, instructor: req.user.id });
     if ( ! deleted ) {
         return new ErrorResponse(404, "assignment not found");
     }
-    console.log("delete runnig");
     const filecount = await AssignmentModel.countDocuments({ file: deleted.file });
 
     if (filecount === 0) {
@@ -73,6 +77,7 @@ export const updateAssignment = funcWrapper(async (req, res) => {
 
 // For all registered users
 export const searchAssignment = funcWrapper(async (req, res) => {
+    
     let { instructorId, courseId } = req.query;
     if(!courseId){
         courseId = req.params.courseId;
@@ -92,7 +97,7 @@ export const searchAssignment = funcWrapper(async (req, res) => {
     if (!assignment) {
         return res.status(404).json({ message: "No assignment found" });
     }
-    console.log(assignment);
+
     res.status(200).json(new AppResponse(assignment, "found"));
 
 })
@@ -101,7 +106,7 @@ export const getCourseAssignments = async (courseId)=>{
     try{
         return await AssignmentModel.find({course:courseId}).select("title dueDate totalMarks file");
     }catch(err){
-        console.log(err);
+        throw err;
     }
 }
 
