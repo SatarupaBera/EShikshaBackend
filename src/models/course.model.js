@@ -57,6 +57,6 @@ courseSchema.pre("save",async function(){
     
 })
 
-courseSchema.index({title:1});
+courseSchema.index({title:1, category:1, instructor:1}, {unique: true});
 
 export default mongoose.model("courses", courseSchema);
