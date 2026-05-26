@@ -16,6 +16,7 @@ export const getCourses = funcWrapper(async (req, res) => {
     const { instructor, title } = req.query;
     let pageSize = req.query.pageSize || 6;
     let pageNumber = req.query.pageNumber || 1;
+    let totalCourses = 0;
     let queryObj = {};
     if(instructor) {
         queryObj['instructor'] = instructor;
@@ -29,6 +30,9 @@ export const getCourses = funcWrapper(async (req, res) => {
                                     .skip((pageNumber-1)*pageSize)
                                     .limit(pageSize)
                                     .lean();
+    if(instructor){
+        totalCourses = await courseModel.countDocuments({instructor:instructor});
+    }
 
     const courseEnrollments = await enrollmentModel.aggregate([
         {
@@ -44,14 +48,15 @@ export const getCourses = funcWrapper(async (req, res) => {
         }
     ])
 
-    const response = courses.map(c=>{
+    const rescourses = courses.map(c=>{
         const ec = courseEnrollments.find(en=>en._id.toString()==c._id.toString());
         return {...c, ...ec};
     })
+
     if (!courses) {
         throw new ErrorResponse(404, "No Course Found");
     }
-    res.status(200).json(new AppResponse(response, "Course found"));
+    res.status(200).json(new AppResponse({courses:rescourses, totalCourses}, "Course found"));
 })
 
 
