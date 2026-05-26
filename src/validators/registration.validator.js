@@ -10,9 +10,6 @@ export const registrationValidators = [
     .notEmpty().withMessage('Please enter your email')
     .isEmail().withMessage('Enter your valid email'),
 
-    body('role')
-    .isIn(['STUDENT', 'INSTRUCTOR']).withMessage('Enter valid role'),
-
     body('password')
     .matches(/[a-z]+/).withMessage('atleast one lowecase letter')
     .matches(/[A-Z]+/).withMessage('atleast one uppercase letter')

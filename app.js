@@ -9,10 +9,6 @@ import userRouter from './src/routes/user.routes.js';
 import instructorRouter from './src/routes/instructor.routes.js';
 import { errorHandler } from './src/middleware/errorHandler.middleware.js';
 import { protectedRequestHandler } from './src/middleware/protectedRequestHandler.middleware.js';
-import aiAssistantRoutes from './src/routes/ai-assistant.routes.js';
-import forumRoute from "./src/routes/ann-forum.routes.js";
-import forumRouter from "./src/routes/forum.routes.js";
-import chatBoxRoutes from './src/routes/chatBox.routes.js';
 
 
 env.config();
@@ -46,13 +42,7 @@ app.use("/student", protectedRequestHandler(['student']), studentRouter);
 // all user
 app.use("/user", protectedRequestHandler(['admin','instructor','student']), userRouter);
 
-app.use('/api/ai', protectedRequestHandler(['admin','instructor','student']),aiAssistantRoutes);
-app.use('/api/forum', protectedRequestHandler(['admin','instructor','student']),forumRoute);
-
-app.use('/api/forum', protectedRequestHandler(['instructor', 'student']),forumRouter);
-app.use('/api/chatBox', chatBoxRoutes);
 // ErrorHandler Middleware
-
 app.use( errorHandler );
 
 export default app;
