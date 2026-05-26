@@ -40,16 +40,18 @@ router.route("/course/:id")
 
 router.route("/course/:courseId/report")
     .get( getStudentsCourseProgress )
+    
 
+//Assignment Results------    
+//viewResponse-----
+router.route("/course/:courseId/assignment/:assignmentId/result")   
+    .get(searchResults);
 
 // Decoupled from the parent composite route to target the submission directly by its individual ID
 router.route("/course/:courseId/assignment-result/:resultId")
     .patch(giveMarks)                                // Instructor updates marks
     .delete(deleteResult);
 
-
-router.route("/course/:courseId/assignment/:assignmentId/result")   
-    .get(searchResults);
 
 //downloading
 router.route("/course/:courseId/assignment/download/:id").get(downloadAssignmentFile);
@@ -64,6 +66,7 @@ router.route("/course/:courseId/quiz/:id")
     .delete(deleteQuiz)
     .patch(updateQuiz);
 
+//announcments--
 router.route("/course/:courseId/announcement")
     .get( getInstructorAnnouncements )
     .post( publishAnnocement )

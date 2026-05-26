@@ -9,7 +9,7 @@ export const getAllUser = funcWrapper(async (req, res)=>{
     pageLimit = pageLimit||5;
     pageNumber = pageNumber||1;
 
-    let query = {role:{$not:{$in:"ADMIN"}}};
+    let query = {role:{$ne:"ADMIN"}};
     if(req.query.role){
         query['role']=req.query.role;
     }
@@ -55,6 +55,7 @@ export const getDashboard = funcWrapper(async (req, res)=>{
     fiveMonthAgoDate.setHours(0,0,0,0);
 
     const data = await Promise.all([
+        //total count of users--
         userModel.aggregate([
             {
                 $match:{
@@ -75,7 +76,9 @@ export const getDashboard = funcWrapper(async (req, res)=>{
                 }
             }
         ]),
+        //monthly enrollments--
         userModel.aggregate([
+        //
             {
                 $match:{
                     createdAt: {
@@ -93,10 +96,10 @@ export const getDashboard = funcWrapper(async (req, res)=>{
                         month: {$month: "$createdAt"},
                         role: "$role"
                     },
-                    count: {$sum:1}
+                    count: {$sum:1} //Increments a counter for every user that fits into that exact combination of year, month, and role.
                 }
             },
-            {
+            {   
                 $sort:{
                     '_id.year':1,
                     '_id.month':1
@@ -112,6 +115,7 @@ export const getDashboard = funcWrapper(async (req, res)=>{
                 }
             }
         ]),
+        //courseDetails--
         courseModel.aggregate([
             {
                 $sort:{

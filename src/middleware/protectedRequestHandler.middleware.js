@@ -27,7 +27,7 @@ export const protectedRequestHandler = (allwedRoles = []) => {
 
             if (allwedRoles.includes(result.role.toLowerCase())) {
                 req.user = { id: result._id }
-
+ 
                 next();
             } else {
                 throw "This url is restricted for you.";

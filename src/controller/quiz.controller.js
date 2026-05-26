@@ -5,14 +5,15 @@ import { ErrorResponse } from '../util/ErrorResponse.js';
 import { funcWrapper } from '../util/wraperFunction.js';
 import { Types } from 'mongoose';
 
-
+//instructor adds a quiz--
 export const addQuiz = funcWrapper( async (req, res) => {
     const { questions, markPerQuestion} = req.body;
+    
     const { courseId } = req.params;
     if (!questions || questions.length === 0) {
         throw "A quiz must have at least one question.";
     }
-
+     
     req.body.course=courseId;
     req.body.instructor=req.user.id;
     req.body.totalMarks=markPerQuestion*questions.length;
@@ -23,6 +24,7 @@ export const addQuiz = funcWrapper( async (req, res) => {
     res.status(201).json(new AppResponse(newQuiz, "Quiz created successfully!"));
 })
 
+//instrctor can see the created quizes-
 export const getQuizes = funcWrapper(async (req, res) => {
     let query = {instructor: new Types.ObjectId(req.user.id)};
     const { courseId } = req.params;
@@ -34,6 +36,7 @@ export const getQuizes = funcWrapper(async (req, res) => {
 
     res.status(200).json(new AppResponse(quizes));
 } )
+
 
 export const getQuizById = funcWrapper(async (req, res)=>{
     const {courseId, id} = req.params;

@@ -7,7 +7,7 @@ import { ErrorResponse } from "../util/ErrorResponse.js";
 import mongoose from "mongoose";
 import { updatedCourseInfo } from "./enrollment.controller.js";
 
-
+//student
 export const addResult = funcWrapper(async (req, res) => {
     const { courseId, assignmentId } = req.params;
     const studentId = req.user.id;
@@ -20,14 +20,14 @@ export const addResult = funcWrapper(async (req, res) => {
         throw new ErrorResponse(404, "Target course not found");
     }
 
-    const fileId = await uploadAssignmentFile(req);
+    const fileId = await uploadAssignmentFile(req);  //pdf is coming as the FormData
 
     const result = await assignmentResultModel.create({
         student: studentId,
         course: courseId,
         instructor: course.instructor,
         assignment: assignmentId,
-        file: fileId,
+        file: fileId,   //the assignment pdf
         marks: req.body.marks | 0
     });
 
@@ -35,7 +35,7 @@ export const addResult = funcWrapper(async (req, res) => {
 
 })
 
-
+//instructor can see the response coming from student addResult-- 
 export const searchResults = funcWrapper(async (req, res) => {
     const { courseId, assignmentId } = req.params;
     let instructorId = req.user.id;
@@ -74,7 +74,7 @@ export const searchResults = funcWrapper(async (req, res) => {
     res.status(200).json(new AppResponse(result, "found"));
 })
 
-
+//instructor can delete the result--
 export const deleteResult = funcWrapper(async (req, res) => {
     const { resultId } = req.params;
     const instructorId = req.user.id;
@@ -92,7 +92,7 @@ export const deleteResult = funcWrapper(async (req, res) => {
     res.status(200).json(new AppResponse(deleted, "Assignment Deleted"));
 })
 
-
+//instructor-- Onsetmarks---
 export const giveMarks = funcWrapper(async (req, res) => {
     const { courseId, resultId } = req.params;
     const instructorId = req.user.id;
@@ -102,25 +102,25 @@ export const giveMarks = funcWrapper(async (req, res) => {
     }
     const updated = await assignmentResultModel.findOneAndUpdate(
         { _id: resultId, instructor: instructorId },
-        { $set: { marks: req.body.marks } },
+        { $set: { marks: req.body.marks } },    //marks are being set 
         { new: true, runValidators: true }
     ).populate('student', "name email");
     if (!updated) {
         return new ErrorResponse(404, "problem updating marks");
     }
-    updatedCourseInfo(courseId, updated.student, 'assignment', updated.assignment);
+    updatedCourseInfo(courseId, updated.student, 'assignment', updated.assignment);  // sending the assignment id to the assignmentResultSchema
     res.status(200).json(new AppResponse(null, "marks Updated"));
 })
 
-
+//student can see the marks--
 export const getMarks = funcWrapper(async (req, res) => {
     const { courseId } = req.params;
     const studentId = req.user.id;
-
+      
     const studentMark = await assignmentResultModel.find(
         { course: courseId, student: studentId },
     ).select("-_id assignment marks");
-
+    
     if (!studentMark) {
         return new ErrorResponse(404, "no marks given");
     }

@@ -50,9 +50,11 @@ export const getInstructorAnnouncements = funcWrapper(async (req, res) => {
 
 export const getStudnetAnnouncements = funcWrapper(async(req, res)=>{
     const studentId = req.user.id;
+    //check for the enrolled courses
     const enrolledCourses = await enrollmentModel.find({student:studentId}).select("-_id course");
+    //map enrolledcourses to courses
     const courses = enrolledCourses.map(c=>c.course)
-    
+    //sarch that course in announcementModel
     const announcements = await announcementModel.find({course:{$in:courses}}).select("-_id message course instructor createdAt").populate("course", "-_id title category").populate("instructor", "name").sort({ createdAt: -1 });
     
     if (!announcements) {
@@ -60,4 +62,4 @@ export const getStudnetAnnouncements = funcWrapper(async(req, res)=>{
     }
     
     res.status(200).json(new AppResponse(announcements, "Announcements fetched successfully"));
-})
+}) 

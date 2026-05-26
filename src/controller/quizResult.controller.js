@@ -44,19 +44,17 @@ export const addQuizResult = funcWrapper(async (req, res)=>{
     res.status(200).json(new AppResponse(quizResult, "Result submitted successfully"));
 })
 
-// export const 
-
-
 const caluculateObtainMarks = (questions, answers, totalMarks)=>{
     let total = 0;
     let marksPerQuestion = totalMarks/questions.length;
     let qdata = questions.map(q=>({id:String(q._id), answer:q.answer}))
+    console.log(qdata);
     answers.forEach(ans=>{
         let ind = qdata.findIndex(q=>q.id===ans.question);
+        console.log(ind);
         if(qdata[ind].answer===ans.answer){
             total+=marksPerQuestion;
         }
     })
-
     return total;
 }

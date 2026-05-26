@@ -36,11 +36,12 @@ router.route("/course/:courseId/assignment/:assignmentId/result")
 
 router.route("/course/:courseId/assignment-result")
         .get( getMarks );                              
-        
+    
 //download
 router.route("/course/:courseId/assignment/download/:id")
     .get(downloadAssignmentFile);
 
+//quiz--
 router.route("/course/:courseId/quiz/:id")
     .post( addQuizResult )
     .get( getQuizById )
@@ -48,5 +49,5 @@ router.route("/course/:courseId/quiz/:id")
 router.route("/announcements")
     .get( getStudnetAnnouncements )
     
-
+    
 export default router;

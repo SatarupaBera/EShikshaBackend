@@ -20,7 +20,7 @@ export const registerUser = funcWrapper(async (req, res)=>{
 })
  
 // Authenticate User
-export const authenticateUser = funcWrapper(async (req, res)=>{
+export const  authenticateUser = funcWrapper(async (req, res)=>{
     let user = await UserModel.findOne({email:req.body.email}).select("-createdAt -updatedAt -__v");
     if(!user){
         throw "Invalid Email Address";

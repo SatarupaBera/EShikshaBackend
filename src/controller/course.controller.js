@@ -12,6 +12,7 @@ import quizModel from "../models/quiz.model.js";
 import enrollmentModel from "../models/enrollment.model.js";
 
 // public
+//landing page--
 export const getCourses = funcWrapper(async (req, res) => {
     const { instructor, title } = req.query;
     let pageSize = req.query.pageSize || 6;
@@ -54,7 +55,7 @@ export const getCourses = funcWrapper(async (req, res) => {
     res.status(200).json(new AppResponse(response, "Course found"));
 })
 
-
+//courseDetails page--
 export const getCourseById = funcWrapper(async (req, res) => {
     const { courseId } = req.params;
     const { studentId } = req.query;
@@ -94,7 +95,7 @@ export const updateCourse = funcWrapper(async (req, res) => {
     const id = req.params.id;
     const course = await courseModel.findOneAndUpdate({ _id: id, instructor: req.user.id }, { $set: req.body }, {
         runValidators: true,
-        returnDocument: "after",
+        returnDocument: "after", 
         context: 'query'
     });
       

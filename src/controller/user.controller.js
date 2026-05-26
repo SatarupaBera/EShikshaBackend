@@ -57,9 +57,10 @@ export const getInstructorDashboard = funcWrapper(async (req, res)=>{
             }
         }
     ])
-
+    //puts the instructors course ids in the courseIds array
     const courseIds = courses.map(c=>c._id);
 
+    //Only the students enrolled to this instructors course will come 
     const students = await enrollmentModel.aggregate([
         {
             $match:{
@@ -69,14 +70,14 @@ export const getInstructorDashboard = funcWrapper(async (req, res)=>{
         {
             $group:{
                 _id:"$course",
-                totalStudents: { $sum : 1 }
+                totalStudents: { $sum : 1 }     
             }
         },
         {
             $project:{
                 _id:0,
                 course:"$_id",
-                totalStudents: 1
+                totalStudents: 1    //totalStudents of this instructor
             }
         },
         {

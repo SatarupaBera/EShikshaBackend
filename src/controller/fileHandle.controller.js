@@ -16,7 +16,7 @@ export const downloadAssignmentFile = funcWrapper( async (req, res) => {
         return new ErrorResponse(404, "File not found");
     }
 
-    res.set({
+    res.set({   
         'Content-Type': file.fileType,
         'Content-Disposition': `attachment; filename="${file.fileName}"`
     })

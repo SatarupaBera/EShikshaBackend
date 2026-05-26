@@ -14,12 +14,12 @@ const FileSchema=new mongoose.Schema({
         type: String, 
         default: 'application/pdf'
     },
-    hashedData: {
+    hashedData: { 
         type:String,
         unique:true,
         index:true,
     }
-},{
+},{ 
     timestamps:true
 })
 

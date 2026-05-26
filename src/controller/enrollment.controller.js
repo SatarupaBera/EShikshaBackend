@@ -75,7 +75,7 @@ export const updatedCourseInfo = async (courseId, studentId, updateField, fieldI
         if (updateField == "assignment") {
             await Enrollments.findOneAndUpdate({ course: courseId, student: studentId }, { $push: { attendedAssignments: fieldId } });
         } else {
-            await Enrollments.findOneAndUpdate({ course: courseId, student: studentId }, { $push: { attendedQuizes: fieldId  } });
+            await Enrollments.findOneAndUpdate({ course: courseId, student: studentId }, { $addToSet: { attendedQuizes: fieldId  } });
         }
     } catch (err) {
         throw err;
