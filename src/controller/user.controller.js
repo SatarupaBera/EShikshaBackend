@@ -149,6 +149,6 @@ export const getStudentDashboard = funcWrapper(async (req, res)=>{
     ])
 
     const quizResult = await quizResultModel.find({student:studentId}).select("quiz obtainMarks createdAt").populate("quiz", "-_id totalMarks").populate("course", "-_id title category").sort({obtainMarks:-1});
-
+     
     res.status(200).json(new AppResponse({enrolledCourses, quizResult}, "success"));
 }) 
