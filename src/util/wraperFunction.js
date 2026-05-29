@@ -4,7 +4,6 @@ export const funcWrapper = (func) => async (req, res, next)=>{
     try{
         await func(req, res);
     }catch(err){
-        console.log(err);
         if(err instanceof ErrorResponse){
             return next(err);
         }

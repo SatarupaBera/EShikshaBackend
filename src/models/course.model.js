@@ -48,11 +48,11 @@ const courseSchema=new mongoose.Schema({
 
 courseSchema.pre("save",async function(){
     const instructor= await userModel.findById(new mongoose.Types.ObjectId(this.instructor));
-    if(!instructor) throw "invalid instructor";
+    if(!instructor) throw new Error("invalid instructor");
 
     const course = await this.constructor.findOne({title:this.title, category:this.category, instructor:this.instructor});
     if(course){
-        throw `course already exists with ${this.title} ${this.category}`;
+        throw new Error(`course already exists with ${this.title} ${this.category}`);
     }
     
 })

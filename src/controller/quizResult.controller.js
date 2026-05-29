@@ -1,7 +1,7 @@
-import { funcWrapper } from "../util/wraperFunction.js";
+import quizModel from "../models/quiz.model.js";
 import QuizResultModel from "../models/quizResult.model.js";
 import { AppResponse } from "../util/AppResponse.js";
-import quizModel from "../models/quiz.model.js";
+import { funcWrapper } from "../util/wraperFunction.js";
 import { updatedCourseInfo } from "./enrollment.controller.js";
 
 
@@ -10,7 +10,7 @@ export const addQuizResult = funcWrapper(async (req, res)=>{
     const studentId = req.user.id;
     const {instructor, ...submittedQuizData} = req.body;
     if(!instructor){
-        throw "Instructor id is required."
+        throw new Error("Instructor id is required.");
     }
     const quizData = await quizModel.findOne({_id:id, instructor:instructor, course:courseId}).select("-_id totalMarks questions");
 
@@ -24,7 +24,7 @@ export const addQuizResult = funcWrapper(async (req, res)=>{
     }
 
     const quizResult = await QuizResultModel.findOneAndUpdate(
-        {instructor:instructor, course:courseId, student:studentId},
+        {instructor:instructor, course:courseId, student:studentId, quiz:id},
         {
             $set: {obtainMarks:obtainMarks, ...submittedQuizData},
             $setOnInsert: resultData
@@ -36,7 +36,7 @@ export const addQuizResult = funcWrapper(async (req, res)=>{
         }
     )
     if(!quizResult){
-        throw "Internal server error";
+        throw new Error("Internal server error");
     }
 
     updatedCourseInfo(courseId, studentId, 'quiz', id);

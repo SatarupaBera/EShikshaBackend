@@ -1,15 +1,16 @@
-import { funcWrapper } from "../util/wraperFunction.js";
-import Course from "../models/course.model.js";
 import validSchema from 'express-validator';
 import { Types } from "mongoose";
-import courseModel from "../models/course.model.js";
+import assignmentModel from "../models/assignment.model.js";
+import assignmentResultModel from "../models/assignmentResult.model.js";
+import { default as Course, default as courseModel } from "../models/course.model.js";
+import enrollmentModel from "../models/enrollment.model.js";
+import quizModel from "../models/quiz.model.js";
+import quizResultModel from "../models/quizResult.model.js";
 import { AppResponse } from "../util/AppResponse.js";
 import { ErrorResponse } from "../util/ErrorResponse.js";
+import { funcWrapper } from "../util/wraperFunction.js";
 import { getCourseAssignments } from "./assignment.controller.js";
 import { getCourseQuizes } from "./quiz.controller.js";
-import assignmentModel from "../models/assignment.model.js";
-import quizModel from "../models/quiz.model.js";
-import enrollmentModel from "../models/enrollment.model.js";
 
 // public
 //landing page--
@@ -81,6 +82,28 @@ export const getCourseById = funcWrapper(async (req, res) => {
     res.status(200).json(new AppResponse(response, "Course found"));
 })
 
+export const getCourseAssignmentAndQuizResultOfStudent = funcWrapper(async (req, res)=>{
+    const studentId=req.user.id;
+    const {courseId}=req.params;
+    
+    const AllResult= await Promise.all([
+        quizResultModel.find({course:courseId,student:studentId}).select('-_id quiz obtainMarks timeTaken'),
+        assignmentResultModel.find({course:courseId,student:studentId}).select('-_id assignment marks')
+    ]);
+
+    const quizResultObj = {};
+    AllResult[0].forEach(q=>{
+        quizResultObj[q.quiz]=[q.obtainMarks, q.timeTaken];
+    })
+
+    const assignmentResultObj={};
+    AllResult[1].forEach(a=>{
+        assignmentResultObj[a.assignment]=a.marks;
+    })
+     
+    res.status(200).json(new AppResponse({quizResults:quizResultObj, assignmentResults:assignmentResultObj}));
+})
+
 
 // Protected
 export const createCourse = funcWrapper(async (req, res) => {
@@ -105,7 +128,7 @@ export const updateCourse = funcWrapper(async (req, res) => {
     });
       
     if (!course) {
-        throw "This course is not exists or created by you";
+        throw new Error("This course is not exists or created by you");
     }
 
     res.status(200).json(new AppResponse(course, "Course updated successfully."));
@@ -116,7 +139,7 @@ export const deleteCourse = funcWrapper(async (req, res) => {
     const id = req.params.id;
     const course = await courseModel.deleteOne({ _id: id, instructor: req.user.id });
     if (course.deletedCount === 0) {
-        throw "This course is not exists or created by you";
+        throw new Error("This course is not exists or created by you");
     }
     res.status(200).json(new AppResponse(null,"Course deleted successfully"));
 })
@@ -156,11 +179,11 @@ export const submitReview = funcWrapper( async(req, res)=>{
     const { courseId } = req.params;
     const { rating, name, feedback } = req.body;
     if(!rating || !feedback){
-        throw "Give rating and a review"
+        throw new Error("Give rating and a review");
     }
     const ratFeedback = await courseModel.findOne({_id:courseId});
     if(!ratFeedback){
-        throw "No course Available";
+        throw new Error("No course Available");
     }
     const updatedRating = parseFloat((((ratFeedback.rating.average*ratFeedback.rating.totalUsers)+rating)/(ratFeedback.rating.totalUsers+1)).toFixed(2));
     const totalUser = ratFeedback.rating.totalUsers+1;

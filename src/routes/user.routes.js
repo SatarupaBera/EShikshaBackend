@@ -1,7 +1,7 @@
 import express from 'express';
 import { getUserSettings, updateUserSettings } from '../controller/user.controller.js';
 import { logout } from '../controller/auth.controller.js';
-import { getChatResponse } from '../controller/chatbot.controller.js';
+import { checkBotStatus, getChatResponse } from '../controller/chatbot.controller.js';
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.route("/logout")
 
 router.route("/chat")
     .post( getChatResponse )
+    .get( checkBotStatus )
 
 
 export default router;

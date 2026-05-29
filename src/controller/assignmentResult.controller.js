@@ -1,11 +1,11 @@
-import { funcWrapper } from "../util/wraperFunction.js";
+import mongoose from "mongoose";
 import assignmentResultModel from "../models/assignmentResult.model.js";
 import courseModel from "../models/course.model.js";
-import { uploadAssignmentFile } from "./fileHandle.controller.js";
 import { AppResponse } from "../util/AppResponse.js";
 import { ErrorResponse } from "../util/ErrorResponse.js";
-import mongoose from "mongoose";
+import { funcWrapper } from "../util/wraperFunction.js";
 import { updatedCourseInfo } from "./enrollment.controller.js";
+import { uploadAssignmentFile } from "./fileHandle.controller.js";
 
 //student
 export const addResult = funcWrapper(async (req, res) => {

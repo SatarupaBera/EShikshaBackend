@@ -1,8 +1,8 @@
-import { funcWrapper } from "../util/wraperFunction.js";
 import announcementModel from "../models/announcement.model.js";
+import enrollmentModel from "../models/enrollment.model.js";
 import { AppResponse } from "../util/AppResponse.js";
 import { ErrorResponse } from "../util/ErrorResponse.js";
-import enrollmentModel from "../models/enrollment.model.js";
+import { funcWrapper } from "../util/wraperFunction.js";
 
 export const publishAnnocement=funcWrapper(async(req,res)=>{
     const { courseId } = req.params;
@@ -10,7 +10,7 @@ export const publishAnnocement=funcWrapper(async(req,res)=>{
     let annocement= await new announcementModel({message:req.body.message, course: courseId, instructor:instructorId}).save();
     annocement = await annocement.populate("course", "-_id title category")
     if(!annocement){
-        throw "internal server error";
+        throw new Error("internal server error");
     }
     res.status(201).json(new AppResponse({message:annocement.message, course:annocement.course, createdAt:annocement.createdAt},"annocement created"));
 })

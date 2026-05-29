@@ -1,8 +1,7 @@
-import { AppResponse } from "../util/AppResponse.js";
-import UserModel from "../models/user.model.js";
-import { funcWrapper } from "../util/wraperFunction.js";
-import userModel from "../models/user.model.js";
 import courseModel from "../models/course.model.js";
+import { default as UserModel, default as userModel } from "../models/user.model.js";
+import { AppResponse } from "../util/AppResponse.js";
+import { funcWrapper } from "../util/wraperFunction.js";
 
 export const getAllUser = funcWrapper(async (req, res)=>{
     let {pageNumber, pageLimit} = req.query;
@@ -19,15 +18,14 @@ export const getAllUser = funcWrapper(async (req, res)=>{
             {email: {$regex:req.query.searchVal, $options:'i'}},
         ]
     }
-    // const users = await UserModel.find(query).select("-password").sort({name:1}).skip((pageNumber-1)*pageLimit).limit(pageLimit);
-    // const totalUsers = await UserModel.countDocuments({role:{$ne:"ADMIN"}})
+
     const [users, totalUsers] = await Promise.all([
         UserModel.find(query).select("-password").sort({name:1}).skip((pageNumber-1)*pageLimit).limit(pageLimit),
         UserModel.countDocuments({role:{$ne:"ADMIN"}})
     ])
     // console.log(totalUsers);
     if(!users){
-        throw "No users found";
+        throw new Error("No users found");
     }
     res.status(200).json(new AppResponse({users, totalUsers}, "Success"));
 })
@@ -38,7 +36,7 @@ export const updateUser = funcWrapper(async (req, res)=>{
     const user = await UserModel.findByIdAndUpdate({_id:userId}, {$set:{role}}, {
         runValidators:true,
     })
-    if(!user) throw "Something Went Wrong";
+    if(!user) throw new Error("Something Went Wrong");
     res.status(200).json(new AppResponse(null, "User Updated"));
 })
 

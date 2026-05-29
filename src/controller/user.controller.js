@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
 import courseModel from "../models/course.model.js";
 import enrollmentModel from "../models/enrollment.model.js";
+import quizResultModel from "../models/quizResult.model.js";
 import userModel from "../models/user.model.js";
 import { AppResponse } from "../util/AppResponse.js";
 import { ErrorResponse } from "../util/ErrorResponse.js";
 import { funcWrapper } from "../util/wraperFunction.js";
-import quizResultModel from "../models/quizResult.model.js";
 
 // User
 export const updateUserSettings = funcWrapper(async (req, res)=>{
     const userId = req.user.id;
     if(!userId){
-        throw "Pass valid userId";
+        throw new Error("Pass valid userId");
     }
     const {name, email} = req.body;
     let updatedData = {};
@@ -24,7 +24,7 @@ export const updateUserSettings = funcWrapper(async (req, res)=>{
 
 export const getUserSettings = funcWrapper(async (req, res)=>{
     if(!req.user.id){
-        throw "You are not a valid user";
+        throw new Error("You are not a valid user");
     }
     const user = await userModel.findById(req.user.id).select("-password -__v -createdAt -updatedAt -_id"); // sending email name and role
     if(!user){

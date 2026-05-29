@@ -1,11 +1,11 @@
+import env from 'dotenv';
 import { validationResult } from "express-validator";
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from "uuid";
+import Token from "../models/revokedToken.js";
 import UserModel from "../models/user.model.js";
 import { AppResponse } from "../util/AppResponse.js";
-import jwt from 'jsonwebtoken';
-import {v4 as uuidv4} from "uuid";
-import env from 'dotenv';
 import { funcWrapper } from "../util/wraperFunction.js";
-import Token from "../models/revokedToken.js";
 
 env.config();
 
@@ -23,7 +23,7 @@ export const registerUser = funcWrapper(async (req, res)=>{
 export const  authenticateUser = funcWrapper(async (req, res)=>{
     let user = await UserModel.findOne({email:req.body.email}).select("-createdAt -updatedAt -__v");
     if(!user){
-        throw "Invalid Email Address";
+        throw new Error("Invalid Email Address");
     }
     if(user.isCorrectPassword(req.body.password)){
 
@@ -34,16 +34,13 @@ export const  authenticateUser = funcWrapper(async (req, res)=>{
 
         res.status(200).json(new AppResponse({token},"User LoggedIn"));
     }else{
-        throw "Incorrect Password";
+        throw new Error("Incorrect Password");
     }
 })
 
 
 export const logout=funcWrapper(async (req,res)=>{
     const jti=req.jti;
-
     await Token.create({jti});
-
     res.status(200).json(new AppResponse(Token,"User Logged out"));
-}
-)
+})

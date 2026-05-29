@@ -1,11 +1,11 @@
-import AssignmentModel from '../models/assignment.model.js';
-import FileModel from '../models/file.model.js';
-import { funcWrapper } from '../util/wraperFunction.js';
-import { AppResponse } from '../util/AppResponse.js';
-import { uploadAssignmentFile } from './fileHandle.controller.js';
-import { ErrorResponse } from '../util/ErrorResponse.js';
-import courseModel from '../models/course.model.js';
 import { validationResult } from 'express-validator';
+import AssignmentModel from '../models/assignment.model.js';
+import courseModel from '../models/course.model.js';
+import FileModel from '../models/file.model.js';
+import { AppResponse } from '../util/AppResponse.js';
+import { ErrorResponse } from '../util/ErrorResponse.js';
+import { funcWrapper } from '../util/wraperFunction.js';
+import { uploadAssignmentFile } from './fileHandle.controller.js';
 
 
 export const addAssignment = funcWrapper(async (req, res) => {

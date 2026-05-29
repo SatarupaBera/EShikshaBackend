@@ -15,6 +15,6 @@ connectDatabase(process.env.MONGO_URI)
     })
 })
 .catch((err)=>{
-    console.log("Server error : ",err);
+    throw new Error(`Server error : ${err}`)
 })
 

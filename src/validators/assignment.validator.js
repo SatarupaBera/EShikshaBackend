@@ -34,9 +34,4 @@ export const assignmentValidators = [
             }
             return true;
         })
-
-    // body('file')
-    //     .notEmpty().withMessage("File is rquired")
-    //     .isMongoId().withMessage('FileId must be a valid Mongo ObjectId if provided')
-
 ]

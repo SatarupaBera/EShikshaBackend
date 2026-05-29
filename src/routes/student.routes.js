@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCourseById, submitReview } from '../controller/course.controller.js';
+import { getCourseAssignmentAndQuizResultOfStudent, submitReview } from '../controller/course.controller.js';
 import { downloadAssignmentFile } from '../controller/fileHandle.controller.js';
 import { addResult, getMarks } from '../controller/assignmentResult.controller.js';
 import multer from 'multer';
@@ -23,6 +23,9 @@ router.route("/dashboard")
 
 router.route("/course")
     .get( showEnrolledCourses )
+
+router.route("/course/:courseId")
+    .get(getCourseAssignmentAndQuizResultOfStudent)
 
 router.route("/course/:courseId/review")
     .post( submitReview )

@@ -1,10 +1,10 @@
+import assignmentResultModel from '../models/assignmentResult.model.js';
 import Enrollments from '../models/enrollment.model.js';
+import quizResultModel from '../models/quizResult.model.js';
 import { AppResponse } from '../util/AppResponse.js';
 import { ErrorResponse } from '../util/ErrorResponse.js';
 import { funcWrapper } from '../util/wraperFunction.js';
 import { getCountCourseAssignmentsAndQuizes } from './course.controller.js';
-import quizResultModel from '../models/quizResult.model.js';
-import assignmentResultModel from '../models/assignmentResult.model.js';
 
 
 export const enrollment = funcWrapper(async (req, res) => {

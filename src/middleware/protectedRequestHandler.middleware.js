@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
-import { ErrorResponse } from '../util/ErrorResponse.js';
 import Token from "../models/revokedToken.js";
+import { ErrorResponse } from '../util/ErrorResponse.js';
 
 export const protectedRequestHandler = (allwedRoles = []) => {
     return async (req, _, next) => {
         try {
 
             if (!req.headers.authorization) {
-                throw "Invalid Token Format Or No token provided";
+                throw new Error("Invalid Token Format Or No token provided");
             }
             const token = req.headers.authorization.split(" ")[1];
             const result = jwt.verify(token, process.env.SECRET_KEY);
@@ -30,7 +30,7 @@ export const protectedRequestHandler = (allwedRoles = []) => {
  
                 next();
             } else {
-                throw "This url is restricted for you.";
+                throw new Error("This url is restricted for you.");
             }
         } catch (err) {
             next(new ErrorResponse(401, err));
